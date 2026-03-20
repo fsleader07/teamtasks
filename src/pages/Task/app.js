@@ -131,7 +131,30 @@ const App = {
     document.getElementById("task-status").value = task.status || "Pending";
     document.getElementById("task-priority").value = task.priority || "Normal";
 
+    document.getElementById("task-deadline").value = task.deadline;
+    document.getElementById("task-completed-at").value =
+      task.completed_at || "";
+
     document.getElementById("task-note").value = task.note || "";
+
+    let assigneeArray = [];
+    if (Array.isArray(task.assignee)) {
+      assigneeArray = task.assignee.map(Number);
+    } else if (
+      typeof task.assignee === "string" &&
+      task.assignee.trim() !== ""
+    ) {
+      assigneeArray = task.assignee.split(",").map(Number);
+    }
+
+    const checkboxes = document.querySelectorAll(
+      "#assignee-dropdown input[type='checkbox']",
+    );
+    checkboxes.forEach((cb) => {
+      cb.checked = assigneeArray.includes(Number(cb.value));
+    });
+
+    this.updateAssigneeText();
   },
 
   async confirmDelete() {

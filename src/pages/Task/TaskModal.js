@@ -21,7 +21,7 @@ const AddTaskModal = {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">โครงการ (Project)</label>
-                                        <select id="task-project" name="project"
+                                        <select id="task-project" name="project" required
                                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none transition-all shadow-sm cursor-pointer">
                                         <option value="">กำลังโหลดโครงการ...</option>
                                         </select>                                
@@ -34,11 +34,10 @@ const AddTaskModal = {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">📝 รายละเอียดงานอย่างละเอียด *</label>
+                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">📝 รายละเอียดงานอย่างละเอียด</label>
                                 <textarea 
                                     id="task-description" 
-                                    name="description" 
-                                    required 
+                                    name="description"  
                                     rows="3" 
                                     placeholder="ระบุสิ่งที่ต้องทำ..."
                                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none resize-none transition-all shadow-sm"
@@ -94,7 +93,7 @@ const AddTaskModal = {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">📅 กำหนดส่ง</label>
-                                    <input type="date" id="task-deadline" name="deadline" 
+                                    <input type="date" id="task-deadline" name="deadline"
                                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none shadow-sm">
                                 </div>
                                 <div>

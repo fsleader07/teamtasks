@@ -37,7 +37,7 @@ const Navbar = {
     // เรียก API หลังจาก render เสร็จ (ใช้ setTimeout เพื่อให้ DOM ถูกสร้างก่อน)
     setTimeout(() => this.fetchUserProfile(), 0);
 
-    const defaultName = "Loading...";
+    const defaultName = "Admin";
 
     return `
         <header class="main-header bg-white h-14 flex items-center justify-between px-6 sticky top-0 z-40 shrink-0 shadow-sm border-b">
