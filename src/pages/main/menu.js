@@ -1,6 +1,5 @@
 const Menu = {
     render(currentPath = 'home') {
-        // ปรับเงื่อนไขการเช็คเมนูที่กำลังเลือกอยู่ให้ตรงกับชื่อ Hash
         const isDashboard = currentPath === 'home' || currentPath === '';
         const isProject = currentPath === 'project';
 

@@ -48,6 +48,24 @@
     ></div>
     <div id="modal-placeholder"></div>
 
+    <script src="src/router.js"></script>
+
+    <script>
+      async function initApp() {
+        // เช็คอีกครั้งเผื่อมีการลบ token ระหว่างการใช้งาน
+        if (!localStorage.getItem("token")) {
+          window.location.href = "src/pages/login.html";
+          return;
+        }
+
+        if (typeof Navbar !== "undefined") {
+          document.getElementById("navbar-container").innerHTML =
+            Navbar.render();
+        }
+        // ... โค้ดเดิมที่เหลือ ...
+      }
+    </script>
+
     <script src="src/pages/main/navbar.js"></script>
     <script src="src/pages/main/menu.js"></script>
 
@@ -111,6 +129,11 @@
       }
 
       async function initApp() {
+        if (!localStorage.getItem("token")) {
+          // ต้องระบุ Path เต็มจาก Root ที่ http.server รันอยู่
+          window.location.href = "/src/pages/login.html";
+          return;
+        }
         if (typeof Navbar !== "undefined") {
           document.getElementById("navbar-container").innerHTML =
             Navbar.render();

@@ -1,3 +1,21 @@
+const checkAuth = () => {
+    const token = localStorage.getItem('token');
+    const isLoginPage = window.location.pathname.includes('login.html');
+
+    if (!token && !isLoginPage) {
+        window.location.href = '/src/pages/login.html';
+        return false;
+    }
+    
+    if (token && isLoginPage) {
+        window.location.href = 'index.html';
+        return false;
+    }
+    return true;
+};
+
+checkAuth();
+
 const TaskAPI = {
   async init(callback) {
     if (window.dataSdk) {
