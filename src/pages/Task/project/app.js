@@ -161,4 +161,40 @@ const App = {
       this.showToast("เกิดข้อผิดพลาด: " + error.message, "error");
     }
   },
+
+  switchView(view) {
+    console.log("กำลังสลับหน้าจอไปที่:", view); // เช็คว่าปุ่มทำงานไหม
+
+    const tableView = document.getElementById('table-view');
+    const calendarView = document.getElementById('calendar-view');
+    const btnTable = document.getElementById('btn-view-table');
+    const btnCalendar = document.getElementById('btn-view-calendar');
+
+    // ดัก Error เผื่อตั้งชื่อ ID ใน HTML ไม่ตรง
+    if (!tableView || !calendarView) {
+        console.error("หา id 'table-view' หรือ 'calendar-view' ไม่เจอใน HTML!");
+        return;
+    }
+
+    if (view === 'table') {
+      tableView.classList.remove('hidden');
+      calendarView.classList.add('hidden');
+      
+      btnTable.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white shadow-sm text-blue-600 w-1/2";
+      btnCalendar.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-500 hover:text-gray-700 w-1/2";
+    } else if (view === 'calendar') {
+      tableView.classList.add('hidden');
+      calendarView.classList.remove('hidden');
+      
+      btnCalendar.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white shadow-sm text-blue-600 w-1/2";
+      btnTable.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-500 hover:text-gray-700 w-1/2";
+      
+      // เรียกใช้งานปฏิทินหลังจากแสดงกล่องแล้ว
+      setTimeout(() => {
+        if (typeof CalendarTask !== 'undefined' && CalendarTask.init) {
+          CalendarTask.init();
+        }
+      }, 10);
+    }
+  },
 };

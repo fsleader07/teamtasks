@@ -9,7 +9,7 @@
   </div>
 
   <div class="bg-white rounded shadow-sm p-4 border border-gray-200">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
       <div class="relative">
         <span class="absolute inset-y-0 left-3 flex items-center text-gray-400"
           >🔍</span
@@ -36,9 +36,27 @@
       >
         <option value="">ผู้รับผิดชอบทั้งหมด</option>
       </select>
+
+      <div class="flex bg-gray-100 p-1 rounded-lg">
+        <button
+          onclick="App.switchView('table')"
+          id="btn-view-table"
+          class="px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white shadow-sm text-blue-600 w-1/2"
+        >
+          📋 ตาราง
+        </button>
+        <button
+          onclick="App.switchView('calendar')"
+          id="btn-view-calendar"
+          class="px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-500 hover:text-gray-700 w-1/2"
+        >
+          📅 ปฏิทิน
+        </button>
+      </div>
+
       <button
         onclick="App.resetFilters()"
-        class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+        class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center justify-center h-full"
       >
         🔄 ล้างค่า
       </button>
@@ -46,6 +64,7 @@
   </div>
 
   <div
+    id="table-view"
     class="bg-white rounded shadow-sm card-primary card-outline overflow-hidden border border-gray-200"
   >
     <div
@@ -116,8 +135,24 @@
       <p class="text-sm">ไม่พบข้อมูลงาน</p>
     </div>
   </div>
+
+  <div
+    id="calendar-view"
+    class="hidden bg-white rounded shadow-sm card-primary card-outline overflow-hidden border border-gray-200"
+  >
+    <div
+      class="px-4 py-3 border-b border-gray-100 font-bold text-gray-700 text-sm"
+    >
+      ตารางงาน (ปฏิทิน)
+    </div>
+    <div class="p-4">
+      <div id="calendar"></div>
+    </div>
+  </div>
+
   <script src="src/pages/Task/project/app.js"></script>
   <script src="src/pages/Task/api.js"></script>
   <script src="src/pages/Task/table_task.js"></script>
   <script src="src/pages/Task/AddTaskModal.js"></script>
+  <script src="src/pages/Task/calendar_task.js"></script>
 </div>
