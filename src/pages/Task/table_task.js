@@ -1,7 +1,6 @@
 const UI = {
   createTaskRow(task, index) {
     const row = document.createElement("tr");
-    // ใช้สไตล์แถวสลับสี (Zebra) และ hover แบบ AdminLTE
     row.className = `border-b border-gray-200 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`;
 
     const taskId = task.id;
