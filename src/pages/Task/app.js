@@ -20,8 +20,16 @@ const App = {
 
   async loadData() {
     try {
-      // ดึงข้อมูลใหม่จาก Service
-      this.allTasks = await TaskService.fetchMyTasks(this.currentFilter);
+      const [tasks, projects, personnel] = await Promise.all([
+        TaskService.fetchMyTasks(this.currentFilter),
+        TaskService.loadProjects(),
+        TaskService.loadPersonnel(),
+      ]);
+
+      this.allTasks = tasks || [];
+      this.allProjects = projects || [];
+      this.allPersonnel = personnel || [];
+
       this.updateFilterOptions();
       this.applyFilters();
     } catch (error) {
@@ -30,42 +38,54 @@ const App = {
   },
 
   updateFilterOptions() {
-    const projects = [...new Set(this.allTasks.map((t) => t.project))].filter(
-      Boolean,
-    );
-    const assignees = [...new Set(this.allTasks.map((t) => t.assignee))].filter(
-      Boolean,
-    );
-
     const pSelect = document.getElementById("filter-project");
     const aSelect = document.getElementById("filter-assignee");
 
     if (pSelect) {
       pSelect.innerHTML =
         '<option value="">โครงการทั้งหมด</option>' +
-        projects.map((p) => `<option value="${p}">${p}</option>`).join("");
+        this.allProjects
+          .map(
+            (p) =>
+              `<option value="${p.project_name}">${p.project_name}</option>`,
+          )
+          .join("");
     }
+
     if (aSelect) {
       aSelect.innerHTML =
         '<option value="">ผู้รับผิดชอบทั้งหมด</option>' +
-        assignees.map((a) => `<option value="${a}">${a}</option>`).join("");
+        this.allPersonnel
+          .map(
+            (u) =>
+              `<option value="${u.nickname || u.firstname}">${
+                u.nickname || u.firstname
+              }</option>`,
+          )
+          .join("");
     }
   },
 
   applyFilters() {
     const searchText =
       document.getElementById("search-input")?.value.toLowerCase() || "";
+
     const projectFilter =
       document.getElementById("filter-project")?.value || "";
+
     const assigneeFilter =
       document.getElementById("filter-assignee")?.value || "";
 
     this.filteredTasks = this.allTasks.filter((task) => {
       const matchSearch = task.task_name.toLowerCase().includes(searchText);
+
       const matchProject =
         projectFilter === "" || task.project === projectFilter;
+
       const matchAssignee =
-        assigneeFilter === "" || task.assignee === assigneeFilter;
+        assigneeFilter === "" ||
+        (task.assignee_names && task.assignee_names.includes(assigneeFilter));
+
       return matchSearch && matchProject && matchAssignee;
     });
 
@@ -88,31 +108,30 @@ const App = {
     this.applyFilters();
   },
 
-  handleEdit(id) {
+  async handleEdit(id) {
     const task = this.allTasks.find((t) => String(t.id) === String(id));
     if (!task) return;
 
+    // 1. เปิด modal ก่อน
+    document.getElementById("task-modal").classList.remove("hidden");
+
+    // 2. โหลด personnel ก่อน (เพราะมี assignee เป็นหลายคน)
+    await TaskService.loadPersonnel();
+    await TaskService.loadProjects();
+
+    // 3. แล้วค่อย set ค่า
     document.getElementById("modal-title-text").textContent = "แก้ไขข้อมูลงาน";
     document.getElementById("edit-task-id").value = task.id;
 
     document.getElementById("task-project").value = task.project || "";
     document.getElementById("task-name").value = task.task_name || "";
-    document.getElementById("task-description").value =
-      task.description || task.task_name || "";
-    document.getElementById("task-assignee").value = task.assignee || "";
+    document.getElementById("task-description").value = task.description || "";
+
     document.getElementById("task-author").value = task.author || "";
     document.getElementById("task-status").value = task.status || "Pending";
     document.getElementById("task-priority").value = task.priority || "Normal";
 
-    if (task.deadline)
-      document.getElementById("task-deadline").value =
-        task.deadline.split("T")[0];
-    if (task.completed_at)
-      document.getElementById("task-completed-at").value =
-        task.completed_at.split("T")[0];
-
     document.getElementById("task-note").value = task.note || "";
-    document.getElementById("task-modal").classList.remove("hidden");
   },
 
   async confirmDelete() {
@@ -135,11 +154,14 @@ const App = {
     const formData = new FormData(form);
     const taskId = document.getElementById("edit-task-id").value;
 
-    // 2. รวบรวมข้อมูลจากฟอร์ม
+    const assignee = Array.from(
+      document.querySelectorAll("#assignee-dropdown input:checked"),
+    ).map((c) => Number(c.value));
+
     const taskData = {
       project: formData.get("project") || null,
       task_name: formData.get("task_name"),
-      assignee: formData.get("assignee") || null,
+      assignee: assignee,
       author: formData.get("author") || null,
       status: formData.get("status") || "Pending",
       priority: formData.get("priority") || "Normal",
@@ -231,8 +253,7 @@ const App = {
       ).length;
   },
 
-  // ... (ฟังก์ชันอื่นๆ เช่น openAddModal, closeModal, handleDelete คงเดิมแต่เรียกใช้ this ถ้าจำเป็น)
-  openAddModal() {
+  async openAddModal() {
     const title = document.getElementById("modal-title-text");
     const editId = document.getElementById("edit-task-id");
     const form = document.getElementById("task-form");
@@ -240,7 +261,13 @@ const App = {
     if (title) title.textContent = "เพิ่มงานใหม่";
     if (editId) editId.value = "";
     if (form) form.reset();
-    document.getElementById("task-modal")?.classList.remove("hidden");
+
+    document.getElementById("task-modal").classList.remove("hidden");
+
+    setTimeout(async () => {
+      await TaskService.loadPersonnel();
+      await TaskService.loadProjects();
+    }, 0);
   },
 
   closeModal() {
@@ -269,5 +296,24 @@ const App = {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  },
+
+  toggleAssigneeDropdown() {
+    const el = document.getElementById("assignee-dropdown");
+    el.classList.toggle("hidden");
+  },
+
+  updateAssigneeText() {
+    const checked = document.querySelectorAll(
+      "#assignee-dropdown input:checked",
+    );
+
+    const names = Array.from(checked).map(
+      (c) => c.nextElementSibling.textContent,
+    );
+
+    document.getElementById("assignee-selected-text").textContent = names.length
+      ? names.join(", ")
+      : "เลือกผู้รับผิดชอบ";
   },
 };

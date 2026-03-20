@@ -83,4 +83,51 @@ const TaskService = {
     if (!response.ok) throw new Error("ไม่สามารถลบข้อมูลได้");
     return await response.json();
   },
+
+  async loadPersonnel() {
+    const res = await fetch("http://127.0.0.1:8000/api/personnel/all");
+    const personnel = await res.json();
+
+    const dropdown = document.getElementById("assignee-dropdown");
+    dropdown.innerHTML = "";
+
+    personnel.forEach((p) => {
+      const row = document.createElement("label");
+      row.className =
+        "flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer";
+
+      row.innerHTML = `
+      <input type="checkbox" value="${p.person_id}" onchange="App.updateAssigneeText()">
+      <span>${p.nickname || p.firstname}</span>
+    `;
+
+      dropdown.appendChild(row);
+    });
+
+    return personnel;
+  },
+
+  async loadProjects() {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/projects/all");
+      const projects = await res.json();
+
+      const dropdown = document.getElementById("task-project");
+      if (!dropdown) return;
+
+      dropdown.innerHTML = '<option value="">เลือกโครงการ</option>';
+
+      projects.forEach((p) => {
+        const option = document.createElement("option");
+        option.value = p.project_name; // เก็บชื่อ project
+        option.textContent = p.project_name;
+        dropdown.appendChild(option);
+      });
+
+      return projects;
+      
+    } catch (error) {
+      console.error("Load Projects Error:", error);
+    }
+  },
 };

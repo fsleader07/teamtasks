@@ -12,7 +12,8 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     project = Column(String(100), nullable=True)       
-    task_name = Column(Text, nullable=False)            
+    task_name = Column(Text, nullable=False)
+    description = Column(Text, nullable=True)          
     assignee = Column(ARRAY(Integer))
     status = Column(String(50), default="Pending")      
     priority = Column(String(20), default="Normal")      
@@ -44,5 +45,6 @@ class TaskResponse(TaskBase):
     """ใช้สำหรับส่งข้อมูลกลับไปที่ Frontend (มี ID และ Created_at)"""
     id: int
     created_at: datetime
+    assignee_names: Optional[List[str]] = []
     
     model_config = ConfigDict(from_attributes=True) # เชื่อม Pydantic กับ SQLAlchemy

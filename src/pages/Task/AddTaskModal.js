@@ -21,8 +21,10 @@ const AddTaskModal = {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">โครงการ (Project)</label>
-                                    <input type="text" id="task-project" name="project" placeholder="กรุณาเลือกโครงการ"
-                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none transition-all shadow-sm">
+                                        <select id="task-project" name="project"
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none transition-all shadow-sm cursor-pointer">
+                                        <option value="">กำลังโหลดโครงการ...</option>
+                                        </select>                                
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">ชื่อรายการงาน *</label>
@@ -46,8 +48,17 @@ const AddTaskModal = {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">ผู้รับผิดชอบ (Assignee) *</label>
-                                    <input type="text" id="task-assignee" name="assignee" required
-                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 focus:border-blue-500 outline-none shadow-sm">
+                                    <div class="relative">
+                                    <div onclick="App.toggleAssigneeDropdown()" 
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-800 cursor-pointer">
+                                        <span id="assignee-selected-text">เลือกผู้รับผิดชอบ</span>
+                                    </div>
+
+                                    <div id="assignee-dropdown"
+                                        class="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded shadow hidden max-h-40 overflow-y-auto">
+                                    </div>
+
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">ผู้มอบหมาย (Author)</label>
