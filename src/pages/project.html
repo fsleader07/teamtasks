@@ -1,0 +1,123 @@
+<div class="space-y-6">
+  <div class="text-right">
+    <button
+      onclick="App.openAddModal()"
+      class="mt-2 md:mt-0 bg-[#007bff] hover:bg-[#0069d9] text-white px-4 py-2 rounded text-sm font-bold shadow transition active:scale-95"
+    >
+      + เพิ่มงานใหม่
+    </button>
+  </div>
+
+  <div class="bg-white rounded shadow-sm p-4 border border-gray-200">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div class="relative">
+        <span class="absolute inset-y-0 left-3 flex items-center text-gray-400"
+          >🔍</span
+        >
+        <input
+          type="text"
+          id="search-input"
+          oninput="App.handleFilterChange()"
+          placeholder="ค้นหาชื่องาน..."
+          class="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded py-2 pl-9 pr-4 focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+      <select
+        id="filter-project"
+        onchange="App.handleFilterChange()"
+        class="bg-white border border-gray-300 text-sm rounded py-2 px-3 outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        <option value="">โครงการทั้งหมด</option>
+      </select>
+      <select
+        id="filter-assignee"
+        onchange="App.handleFilterChange()"
+        class="bg-white border border-gray-300 text-sm rounded py-2 px-3 outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        <option value="">ผู้รับผิดชอบทั้งหมด</option>
+      </select>
+      <button
+        onclick="App.resetFilters()"
+        class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+      >
+        🔄 ล้างค่า
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="bg-white rounded shadow-sm card-primary card-outline overflow-hidden border border-gray-200"
+  >
+    <div
+      class="px-4 py-3 border-b border-gray-100 font-bold text-gray-700 text-sm"
+    >
+      รายการงานปัจจุบัน
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead
+          class="bg-gray-50 text-gray-600 font-bold uppercase text-[11px] border-b"
+        >
+          <tr>
+            <th class="px-4 py-3 text-center border-r">No.</th>
+            <th
+              class="px-4 py-3 border-r cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('project')"
+            >
+              Project
+            </th>
+            <th
+              class="px-4 py-3 border-r cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('task_name')"
+            >
+              ชื่องาน
+            </th>
+            <th
+              class="px-4 py-3 border-r cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('assignee')"
+            >
+              ผู้รับผิดชอบ
+            </th>
+            <th
+              class="px-4 py-3 border-r text-center cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('status')"
+            >
+              สถานะ
+            </th>
+            <th
+              class="px-4 py-3 border-r text-center cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('priority')"
+            >
+              Priority
+            </th>
+            <th
+              class="px-4 py-3 border-r text-center cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('author')"
+            >
+              ผู้มอบหมาย
+            </th>
+            <th
+              class="px-4 py-3 border-r cursor-pointer hover:bg-gray-100"
+              onclick="App.sortBy('deadline')"
+            >
+              กำหนดส่ง
+            </th>
+            <th class="px-4 py-3 text-center">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="task-list" class="divide-y divide-gray-100"></tbody>
+      </table>
+    </div>
+    <div
+      id="empty-state"
+      class="hidden py-12 text-center text-gray-400 bg-white"
+    >
+      <p class="text-3xl mb-1">📭</p>
+      <p class="text-sm">ไม่พบข้อมูลงาน</p>
+    </div>
+  </div>
+  <script src="src/pages/Task/project/app.js"></script>
+  <script src="src/pages/Task/api.js"></script>
+  <script src="src/pages/Task/ui.js"></script>
+  <script src="src/pages/Task/AddTaskModal.js"></script>
+</div>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="th" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager Pro</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "IBM Plex Sans Thai", sans-serif;
+      }
+      .sidebar-dark {
+        background-color: #343a40;
+      }
+      .content-wrapper {
+        background-color: #f4f6f9;
+      }
+      .card-primary.card-outline {
+        border-top: 3px solid #007bff;
+      }
+    </style>
+  </head>
+  <body class="h-full bg-[#f4f6f9] overflow-hidden">
+    <div class="flex h-screen overflow-hidden">
+      <div id="sidebar-container" class="h-full flex-shrink-0"></div>
+
+      <div class="flex-1 flex flex-col min-w-0">
+        <div id="navbar-container"></div>
+
+        <main
+          id="main-content"
+          class="flex-1 overflow-y-auto p-6 content-wrapper"
+        >
+          <div class="flex items-center justify-center h-full">
+            <p class="text-gray-400 animate-pulse">กำลังโหลดข้อมูล...</p>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div
+      id="toast-container"
+      class="fixed top-4 right-4 z-[9999] space-y-2"
+    ></div>
+    <div id="modal-placeholder"></div>
+
+    <script src="src/pages/main/navbar.js"></script>
+    <script src="src/pages/main/menu.js"></script>
+
+    <script>
+      async function executeScripts(container) {
+        const scripts = container.querySelectorAll("script");
+        const loadPromises = Array.from(scripts).map((oldScript) => {
+          return new Promise((resolve, reject) => {
+            const newScript = document.createElement("script");
+
+            Array.from(oldScript.attributes).forEach((attr) => {
+              newScript.setAttribute(attr.name, attr.value);
+            });
+
+            // ถ้าเป็น Script แบบระบุ src ต้องรอให้โหลดเสร็จก่อน
+            if (newScript.src) {
+              newScript.onload = resolve;
+              newScript.onerror = reject;
+            } else {
+              newScript.appendChild(
+                document.createTextNode(oldScript.innerHTML),
+              );
+              resolve(); // Script แบบเขียนข้างใน (Inline) รันทันที
+            }
+
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+        });
+
+        return Promise.all(loadPromises);
+      }
+
+      async function loadView(page) {
+        try {
+          const response = await fetch(`src/pages/${page}.html`);
+          if (!response.ok) throw new Error("ไม่พบไฟล์ " + page);
+
+          const html = await response.text();
+          const mainContent = document.getElementById("main-content");
+          mainContent.innerHTML = html;
+
+          // รัน Script และ "รอ" ให้โหลดเสร็จทั้งหมด
+          await executeScripts(mainContent);
+
+          // อัปเดตเมนูข้าง
+          if (typeof Menu !== "undefined") {
+            document.getElementById("sidebar-container").innerHTML =
+              Menu.render(page);
+          }
+
+          // เมื่อทุกอย่างพร้อมแล้วค่อยสั่งให้ App เริ่มทำงาน
+          if (typeof App !== "undefined" && App.init) {
+            console.log("Initializing App for page:", page);
+            await App.init();
+          }
+        } catch (error) {
+          console.error("Error loading view:", error);
+          document.getElementById("main-content").innerHTML =
+            `<div class="text-center text-red-500 py-10">เกิดข้อผิดพลาด: ${error.message}</div>`;
+        }
+      }
+
+      async function initApp() {
+        if (typeof Navbar !== "undefined") {
+          document.getElementById("navbar-container").innerHTML =
+            Navbar.render();
+        }
+        if (typeof AddTaskModal !== "undefined") {
+          document.getElementById("modal-placeholder").innerHTML =
+            AddTaskModal.render();
+        }
+
+        const handleRoute = () => {
+          const path = window.location.hash.replace("#", "") || "home";
+          loadView(path);
+        };
+
+        window.addEventListener("hashchange", handleRoute);
+        handleRoute();
+      }
+
+      document.addEventListener("DOMContentLoaded", initApp);
+    </script>
+  </body>
+</html>

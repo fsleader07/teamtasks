@@ -1,0 +1,164 @@
+const App = {
+  // นำตัวแปรมาเก็บไว้เป็น Property ของ Object
+  allTasks: [],
+  filteredTasks: [],
+  currentFilter: "all",
+  sortConfig: { key: "id", direction: "asc" },
+  taskToDelete: null,
+
+  async init() {
+    // ล้างข้อมูลเก่าทุกครั้งที่เริ่มโหลดหน้าใหม่
+    this.allTasks = [];
+    this.filteredTasks = [];
+
+    const placeholder = document.getElementById("modal-placeholder");
+    if (placeholder && typeof AddTaskModal !== "undefined") {
+      placeholder.innerHTML = AddTaskModal.render();
+    }
+    await this.loadData();
+  },
+
+  async loadData() {
+    try {
+      // ดึงข้อมูลผ่าน Service และเก็บเข้า Property ของตัวเอง
+      this.allTasks = await TaskService.fetchAllTasks(this.currentFilter);
+      this.updateFilterOptions();
+      this.applyFilters();
+    } catch (error) {
+      console.error("Load Data Error:", error);
+    }
+  },
+
+  updateFilterOptions() {
+    // อ้างอิงผ่าน this.allTasks เพื่อความถูกต้องของข้อมูลในหน้านั้นๆ
+    const projects = [...new Set(this.allTasks.map((t) => t.project))].filter(
+      Boolean,
+    );
+    const assignees = [...new Set(this.allTasks.map((t) => t.assignee))].filter(
+      Boolean,
+    );
+
+    const pSelect = document.getElementById("filter-project");
+    const aSelect = document.getElementById("filter-assignee");
+
+    if (pSelect) {
+      pSelect.innerHTML =
+        '<option value="">โครงการทั้งหมด</option>' +
+        projects.map((p) => `<option value="${p}">${p}</option>`).join("");
+    }
+    if (aSelect) {
+      aSelect.innerHTML =
+        '<option value="">ผู้รับผิดชอบทั้งหมด</option>' +
+        assignees.map((a) => `<option value="${a}">${a}</option>`).join("");
+    }
+  },
+
+  applyFilters() {
+    const searchText =
+      document.getElementById("search-input")?.value.toLowerCase() || "";
+    const projectFilter =
+      document.getElementById("filter-project")?.value || "";
+    const assigneeFilter =
+      document.getElementById("filter-assignee")?.value || "";
+
+    // กรองข้อมูลจากชุดข้อมูลปัจจุบัน
+    this.filteredTasks = this.allTasks.filter((task) => {
+      const matchSearch = task.task_name.toLowerCase().includes(searchText);
+      const matchProject =
+        projectFilter === "" || task.project === projectFilter;
+      const matchAssignee =
+        assigneeFilter === "" || task.assignee === assigneeFilter;
+      return matchSearch && matchProject && matchAssignee;
+    });
+
+    this.render();
+    this.updateStats();
+  },
+
+  handleEdit(id) {
+    // ค้นหาจาก this.allTasks ของหน้านั้นๆ
+    const task = this.allTasks.find((t) => String(t.id) === String(id));
+    if (!task) return;
+
+    document.getElementById("modal-title-text").textContent = "แก้ไขข้อมูลงาน";
+    document.getElementById("edit-task-id").value = task.id;
+
+    document.getElementById("task-project").value = task.project || "";
+    document.getElementById("task-name").value = task.task_name || "";
+    document.getElementById("task-description").value =
+      task.description || task.task_name || "";
+    document.getElementById("task-assignee").value = task.assignee || "";
+    document.getElementById("task-author").value = task.author || "";
+    document.getElementById("task-status").value = task.status || "Pending";
+    document.getElementById("task-priority").value = task.priority || "Normal";
+
+    if (task.deadline)
+      document.getElementById("task-deadline").value =
+        task.deadline.split("T")[0];
+    if (task.completed_at)
+      document.getElementById("task-completed-at").value =
+        task.completed_at.split("T")[0];
+
+    document.getElementById("task-note").value = task.note || "";
+    document.getElementById("task-modal").classList.remove("hidden");
+  },
+
+  render() {
+    const list = document.getElementById("task-list");
+    const emptyState = document.getElementById("empty-state");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (this.filteredTasks.length === 0) {
+      emptyState?.classList.remove("hidden");
+    } else {
+      emptyState?.classList.add("hidden");
+      this.filteredTasks.forEach((task, index) => {
+        const row = UI.createTaskRow(task, index);
+        list.appendChild(row);
+      });
+    }
+  },
+
+  async handleFormSubmit(event) {
+    // 1. ป้องกันเบราว์เซอร์รีเฟรชหน้าจอ
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const taskId = document.getElementById("edit-task-id").value;
+
+    // 2. รวบรวมข้อมูลจากฟอร์ม
+    const taskData = {
+      project: formData.get("project") || null,
+      task_name: formData.get("task_name"),
+      assignee: formData.get("assignee") || null,
+      author: formData.get("author") || null,
+      status: formData.get("status") || "Pending",
+      priority: formData.get("priority") || "Normal",
+      deadline: formData.get("deadline") || null,
+      completed_at: formData.get("completed_at") || null,
+      note: formData.get("note") || null,
+    };
+
+    try {
+      if (taskId) {
+        // กรณีแก้ไขข้อมูล
+        await TaskService.updateTask(taskId, taskData);
+        this.showToast("อัปเดตข้อมูลเรียบร้อยแล้ว", "success");
+      } else {
+        // กรณีเพิ่มงานใหม่
+        await TaskService.createTask(taskData);
+        this.showToast("บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      }
+
+      // 3. ปิดหน้าต่าง Modal และโหลดข้อมูลใหม่
+      this.closeModal();
+      await this.loadData();
+    } catch (error) {
+      console.error("Submit Error:", error);
+      this.showToast("เกิดข้อผิดพลาด: " + error.message, "error");
+    }
+  },
+};
