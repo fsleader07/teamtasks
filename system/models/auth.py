@@ -11,7 +11,7 @@ class User(Base):
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
-    person_id = Column(String, nullable=False)
+    person_id = Column(Integer, nullable=False)
     role = Column(String, default="user")
     is_active = Column(Boolean, default=True)
     last_login = Column(DateTime, nullable=True)

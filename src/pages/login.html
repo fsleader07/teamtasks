@@ -114,13 +114,17 @@
               if (data.access_token) {
                 localStorage.setItem("token", data.access_token);
               }
-              // เก็บ user_id ไว้ใช้ query ข้อมูลของตัวเอง
-              if (data.user_id) {
-                localStorage.setItem("user_id", data.user_id);
+
+              if (data.person_id) {
+                localStorage.setItem("person_id", data.person_id);
+              }
+
+              if (data.role) {
+                localStorage.setItem("role", data.role);
               }
 
               alert("เข้าสู่ระบบสำเร็จ!");
-              window.location.href = "/index.html"; // แก้จาก /dashboard เป็น index.html
+              window.location.href = "/index.html";
             }
           } catch (error) {
             console.error("Error:", error);

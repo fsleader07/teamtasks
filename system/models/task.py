@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, Date, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, Date, DateTime, func , ARRAY
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional , List
 from connection.connection import Base
 
 # ==========================================
@@ -13,7 +13,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     project = Column(String(100), nullable=True)       
     task_name = Column(Text, nullable=False)            
-    assignee = Column(String(100), nullable=True)        
+    assignee = Column(ARRAY(Integer))
     status = Column(String(50), default="Pending")      
     priority = Column(String(20), default="Normal")      
     author = Column(String(100), nullable=True)          
@@ -28,7 +28,7 @@ class Task(Base):
 class TaskBase(BaseModel):
     project: Optional[str] = None
     task_name: str
-    assignee: Optional[str] = None
+    assignee: Optional[List[int]] = []
     status: Optional[str] = "Pending"
     priority: Optional[str] = "Normal"
     author: Optional[str] = None

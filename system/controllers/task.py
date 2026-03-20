@@ -1,10 +1,16 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import any_
 from models.task import Task, TaskCreate
 
-def get_tasks(db: Session, status: str = "all"):
+def get_tasks(db: Session, person_id: int = None, status: str = "all"):
     query = db.query(Task)
+    
+    if person_id:
+        query = query.filter(person_id == any_(Task.assignee))
+    
     if status != "all":
         query = query.filter(Task.status == status)
+        
     return query.order_by(Task.id.asc()).all()
 
 def create_task(db: Session, task: TaskCreate):

@@ -23,6 +23,15 @@ const TaskService = {
   async fetchMyTasks(status = "all") {
     try {
       const url = new URL(this.BASE_URL);
+
+      // 1. ดึง person_id จาก localStorage
+      const myPersonId = localStorage.getItem("person_id");
+
+      // 2. ถ้ามี ID ให้ส่งไปเป็น Query Parameter (?person_id=1)
+      if (myPersonId) {
+        url.searchParams.append("person_id", myPersonId);
+      }
+
       if (status !== "all") {
         url.searchParams.append("status", status);
       }
@@ -32,11 +41,8 @@ const TaskService = {
 
       const data = await response.json();
 
-      // กรองข้อมูลทิ้งตรงนี้: เอาเฉพาะงานที่ status ไม่ใช่ Success
-      return data.filter(
-        (task) =>
-          task.status?.toLowerCase() !== "success"
-      );
+      // 3. กรอง Success ออก (เหมือนเดิม)
+      return data.filter((task) => task.status?.toLowerCase() !== "success");
     } catch (error) {
       console.error("Fetch Error:", error);
       return [];
