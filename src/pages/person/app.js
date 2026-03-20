@@ -56,9 +56,8 @@ var PersonnelApp = PersonnelApp || {
           <tr class="hover:bg-gray-50 border-b border-gray-100">
             <td class="px-4 py-3 text-center border-r text-gray-500 font-mono text-xs">${index + 1}</td>
             <td class="px-4 py-3 border-r font-medium text-gray-800">${person.firstname} ${person.lastname}</td>
+            <td class="px-4 py-3 border-r text-gray-600">${person.nickname || "-"}</td>
             <td class="px-4 py-3 border-r text-gray-600">${person.position || "-"}</td>
-            <td class="px-4 py-3 border-r text-gray-600">${person.email || "-"}</td>
-            <td class="px-4 py-3 border-r text-gray-600">${person.phone || "-"}</td>
             <td class="px-4 py-3 text-center space-x-3">
               <button onclick="PersonnelApp.openModal(${person.personnel_id})" class="text-blue-600 hover:text-blue-800 font-bold text-xs">แก้ไข</button>
               <button onclick="PersonnelApp.handleDelete(${person.personnel_id})" class="text-red-600 hover:text-red-800 font-bold text-xs">ลบ</button>

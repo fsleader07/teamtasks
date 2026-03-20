@@ -32,9 +32,8 @@
           <tr>
             <th class="px-4 py-3 text-center border-r w-16">ID</th>
             <th class="px-4 py-3 border-r">ชื่อ-นามสกุล</th>
+            <th class="px-4 py-3 border-r">ชื่อเล่น</th>
             <th class="px-4 py-3 border-r">ตำแหน่ง</th>
-            <th class="px-4 py-3 border-r">อีเมล</th>
-            <th class="px-4 py-3 border-r w-32">เบอร์โทรศัพท์</th>
             <th class="px-4 py-3 text-center">จัดการ</th>
           </tr>
         </thead>
@@ -71,6 +70,15 @@
         />
       </div>
 
+            <div>
+        <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อเล่น</label>
+        <input
+          type="text"
+          id="personnel-nickname"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
       <div>
         <label class="block text-xs font-bold text-gray-600 mb-1">ตำแหน่ง (Position)</label>
         <input
@@ -80,24 +88,7 @@
         />
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-bold text-gray-600 mb-1">อีเมล</label>
-          <input
-            type="email"
-            id="personnel-email"
-            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
-          />
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-600 mb-1">เบอร์โทรศัพท์</label>
-          <input
-            type="text"
-            id="personnel-phone"
-            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
-          />
-        </div>
-      </div>
+      <dic
 
       <div class="flex justify-end space-x-2 pt-2">
         <button
