@@ -1,5 +1,5 @@
 const TaskService = {
-  BASE_URL: "http://127.0.0.1:8000/api/tasks",
+  BASE_URL: "http://192.168.1.180:8000/api/tasks",
 
   async fetchAllTasks(status = "all") {
     try {
@@ -85,7 +85,7 @@ const TaskService = {
   },
 
   async loadPersonnel() {
-    const res = await fetch("http://127.0.0.1:8000/api/personnel/all");
+    const res = await fetch("http://192.168.1.180:8000/api/personnel/all");
     const personnel = await res.json();
 
     const dropdown = document.getElementById("assignee-dropdown");
@@ -109,7 +109,7 @@ const TaskService = {
 
   async loadProjects() {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/projects/all");
+      const res = await fetch("http://192.168.1.180:8000/api/projects/all");
       const projects = await res.json();
 
       const dropdown = document.getElementById("task-project");

@@ -24,7 +24,7 @@ var ProjectApp = ProjectApp || {
   async loadData() {
     try {
       // เรียก API (ควรระบุ URL เต็มหากรันคนละ Port)
-      const response = await fetch("http://127.0.0.1:8000/api/projects/all");
+      const response = await fetch("http://192.168.1.180:8000/api/projects/all");
       if (!response.ok) throw new Error("Network response was not ok");
 
       const data = await response.json();
@@ -114,8 +114,8 @@ var ProjectApp = ProjectApp || {
     };
 
     const url = id
-      ? `http://127.0.0.1:8000/api/projects/${id}`
-      : "http://127.0.0.1:8000/api/projects";
+      ? `http://192.168.1.180:8000/api/projects/${id}`
+      : "http://192.168.1.180:8000/api/projects";
     const method = id ? "PUT" : "POST";
 
     try {
@@ -145,7 +145,7 @@ var ProjectApp = ProjectApp || {
     if (!confirm("คุณมั่นใจหรือไม่ที่จะลบโครงการนี้?")) return;
 
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/projects/${id}`, {
+      const resp = await fetch(`http://192.168.1.180:8000/api/projects/${id}`, {
         method: "DELETE",
       });
       if (resp.ok) {

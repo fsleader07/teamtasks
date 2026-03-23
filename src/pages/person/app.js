@@ -16,7 +16,7 @@ var PersonnelApp = PersonnelApp || {
 
   async loadData() {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/personnel/all");
+      const response = await fetch("http://192.168.1.180:8000/api/personnel/all");
       if (!response.ok) throw new Error("Load failed");
       const data = await response.json();
       this.allPersonnel = data || [];
@@ -107,8 +107,8 @@ var PersonnelApp = PersonnelApp || {
     };
 
     const url = id
-      ? `http://127.0.0.1:8000/api/personnel/${id}`
-      : "http://127.0.0.1:8000/api/personnel";
+      ? `http://192.168.1.180:8000/api/personnel/${id}`
+      : "http://192.168.1.180:8000/api/personnel";
     const method = id ? "PUT" : "POST";
 
     try {
@@ -136,7 +136,7 @@ var PersonnelApp = PersonnelApp || {
   async handleDelete(id) {
     if (!confirm("ลบข้อมูลบุคลากรนี้?")) return;
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/personnel/${id}`, {
+      const resp = await fetch(`http://192.168.1.180:8000/api/personnel/${id}`, {
         method: "DELETE",
       });
       if (resp.ok) {

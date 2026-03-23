@@ -17,7 +17,7 @@ const Navbar = {
     // 2. กรณีมี person_id (ดึงข้อมูลจาก API)
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/personnel/${personId}`,
+        `http://192.168.1.180:8000/api/personnel/${personId}`,
       );
       if (!response.ok) throw new Error("User not found");
 
