@@ -20,29 +20,21 @@ try {
   console.error("Glob Import Error:", e);
 }
 
-const fetchUserProfile = async () => {
-  console.log("1. Starting fetchUserProfile...");
-  
+const fetchUserProfile = async () => {  
   const personId = localStorage.getItem("person_id");
-  console.log("2. person_id from localStorage:", personId);
 
-  // เช็คทั้ง null, undefined และ string "null"
   if (!personId || personId === "null" || personId === "undefined") {
-    console.log("3. No personId found, setting to Administrator");
     userName.value = "Administrator";
     profileImg.value = defaultImg;
     return;
   }
 
   try {
-    console.log("4. Fetching from API...");
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/personnel/${personId}`);
     
     if (!response.ok) throw new Error("API Response not ok");
 
     const data = await response.json();
-    console.log("5. API Data received:", data);
-
     if (data && data.firstname) {
       userName.value = `${data.firstname} ${data.lastname || ""}`.trim();
       

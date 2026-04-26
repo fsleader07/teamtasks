@@ -38,6 +38,26 @@ export const fetchMyTasks = async (status = "all") => {
   }
 };
 
+export const fetchStatusCounts = async () => {
+  try {
+    const myPersonId = localStorage.getItem("person_id");
+    const myRole = localStorage.getItem("role") || "user";
+    
+    const url = new URL(`${BASE_URL}/tasks/status_counts`);
+    
+    if (myPersonId) url.searchParams.append("person_id", myPersonId);
+    url.searchParams.append("role", myRole);
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    throw error;
+  }
+};
+
 export const createTask = async (taskData) => {
   const response = await fetch(`${BASE_URL}/tasks`, {
     method: "POST",
@@ -81,6 +101,7 @@ export const loadProjects = async () => {
 export const TaskService = {
   fetchMyTasks,
   fetchMyAllTasks,
+  fetchStatusCounts,
   createTask,
   updateTask,
   deleteTask,

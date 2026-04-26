@@ -39,7 +39,7 @@
               <input
                 v-model="filters.search"
                 type="text"
-                placeholder="ชื่อโปรเจกต์ หรือชื่องาน..."
+                placeholder="ค้นหาชื่องาน..."
                 class="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded py-2 pl-9 pr-4 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
               />
             </div>
@@ -73,6 +73,7 @@
             >
               <option value="">ทั้งหมด</option>
               <option value="pending">⏳ Pending</option>
+              <option value="in progress">🚧 In Progress</option>
               <option value="success">✅ Success</option>
               <option value="break">❌ Break</option>
               <option value="opened">📂 Opened</option>
@@ -86,7 +87,8 @@
               class="bg-white border border-gray-300 text-sm rounded py-2 px-3 outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="">ทั้งหมด</option>
-              <option value="high">🔴 High</option>
+              <option value="urgent">🔴 Urgent</option>
+              <option value="high">🟠 High</option>
               <option value="normal">🟡 Normal</option>
               <option value="low">🟢 Low</option>
             </select>

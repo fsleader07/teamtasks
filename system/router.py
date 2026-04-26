@@ -45,6 +45,13 @@ def read_tasks(
     return task_controller.get_tasks(db, person_id=person_id, status=status)
 
 
+@router.get("/api/tasks/status_counts", tags=["Tasks"])
+def read_status_counts(
+    person_id: int = None, role: str = "user", db: Session = Depends(get_db)
+):
+    return task_controller.get_status_counts(db, person_id=person_id, role=role)
+
+
 @router.post("/api/tasks", response_model=TaskResponse, tags=["Tasks"])
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     return task_controller.create_task(db=db, task=task)
