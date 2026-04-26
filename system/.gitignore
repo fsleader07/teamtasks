@@ -1,0 +1,15 @@
+# Environment Variables
+.env
+*.env
+.env.*
+!.env.example  # เก็บไฟล์ตัวอย่างไว้ให้ทีมรู้ว่าต้องมี Key อะไรบ้าง
+
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
