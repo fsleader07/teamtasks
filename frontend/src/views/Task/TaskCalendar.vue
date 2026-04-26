@@ -1,32 +1,44 @@
 <template>
   <div class="calendar-wrapper">
-    <FullCalendar :options="calendarOptions" />
+    <div v-if="isLoading" class="flex justify-center items-center h-[650px] bg-gray-50/50">
+       <span class="text-sm text-gray-500">กำลังดึงข้อมูลงาน...</span>
+    </div>
+    <FullCalendar v-else :options="calendarOptions" />
   </div>
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits } from 'vue';
+import { ref, computed, onMounted, defineEmits } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 
-// รับค่า tasks ที่ถูก Filter แล้วมาจากตัวแม่
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true,
-    default: () => []
-  }
-});
+import { fetchMyAllTasks } from '@/views/Task/TaskService'; 
 
-// ส่ง Event กลับไปบอกตัวแม่เมื่อคลิกที่งาน
+const tasks = ref([]);
+const isLoading = ref(true);
 const emit = defineEmits(['event-click']);
 
-// แปลง Data ให้อยู่ใน Format ที่ FullCalendar ต้องการ (Reactive ตาม Filter)
+const loadTasks = async () => {
+  try {
+    isLoading.value = true;
+    const response = await fetchMyAllTasks(); 
+    tasks.value = response || [];
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadTasks();
+});
+
 const calendarEvents = computed(() => {
-  return props.tasks.map(task => {
-    let bgColor = '#007bff'; // สี Default (In Progress / Opened)
+  return tasks.value.map(task => {
+    let bgColor = '#007bff';
     const status = String(task.status || '').toLowerCase();
     
     if (status === 'เสร็จแล้ว' || status === 'success') {
@@ -55,7 +67,6 @@ const calendarEvents = computed(() => {
   });
 });
 
-// ตั้งค่า Options ของ FullCalendar
 const calendarOptions = computed(() => ({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
@@ -71,10 +82,9 @@ const calendarOptions = computed(() => ({
     week: 'สัปดาห์',
     list: 'รายการ'
   },
-  height: 650,
-  events: calendarEvents.value, // นำข้อมูลที่ Map แล้วมาใส่
+  height: 450,
+  events: calendarEvents.value, 
   
-  // Custom HTML สำหรับการ์ดงาน (จาก calendar_task.js เดิม)
   eventContent: function(arg) {
     const title = arg.event.title;
     const status = arg.event.extendedProps.status;
@@ -93,16 +103,13 @@ const calendarOptions = computed(() => ({
     };
   },
 
-  // เมื่อกดคลิกที่ Event ในปฏิทิน
   eventClick: function(info) {
-    // ส่ง ID งานกลับไปหาหน้า Dashboard เพื่อสั่งเปิด Modal แก้ไข
     emit('event-click', info.event.id);
   }
 }));
 </script>
 
 <style>
-/* อนุญาตให้ Tailwind ทำงานใน FullCalendar HTML Injection ได้ */
 .calendar-wrapper .fc-event {
   border: none !important;
 }

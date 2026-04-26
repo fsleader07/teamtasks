@@ -1,7 +1,6 @@
 /* 1. เพิ่ม Engine ของ Tailwind (สำคัญที่สุดเพื่อให้ class ต่างๆ ทำงาน) */
 @import "tailwindcss";
-
-@import './base.css';
+/* @import './base.css'; */
 
 #app {
   width: 100%;

@@ -1,47 +1,71 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import defaultImg from '@/assets/profile/tiya.jpg';
+
+// ใช้ Relative Path ที่เจ้านายมั่นใจว่าถูก
+import defaultImg from '../../assets/profile/tiya.jpg';
 
 const router = useRouter();
 const userName = ref("Loading...");
-const profileImg = ref(defaultImg); // เริ่มต้นด้วยรูป Default
+const profileImg = ref(defaultImg);
+
+// ลองหุ้ม Glob ไว้ในกรณีที่ Path มีปัญหา Script จะได้ไม่พังทั้งหน้า
+let profileImages = {};
+try {
+  profileImages = import.meta.glob('@/assets/profile/*.{png,jpg,jpeg,webp}', { 
+    eager: true, 
+    import: 'default' 
+  });
+} catch (e) {
+  console.error("Glob Import Error:", e);
+}
 
 const fetchUserProfile = async () => {
+  console.log("1. Starting fetchUserProfile...");
+  
   const personId = localStorage.getItem("person_id");
+  console.log("2. person_id from localStorage:", personId);
 
-  // 1. กรณีเป็น Admin (ไม่มี person_id)
-  if (!personId) {
+  // เช็คทั้ง null, undefined และ string "null"
+  if (!personId || personId === "null" || personId === "undefined") {
+    console.log("3. No personId found, setting to Administrator");
     userName.value = "Administrator";
     profileImg.value = defaultImg;
     return;
   }
 
-  // 2. กรณีมี person_id (ดึงข้อมูลจาก API)
   try {
+    console.log("4. Fetching from API...");
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/personnel/${personId}`);
-    if (!response.ok) throw new Error("User not found");
+    
+    if (!response.ok) throw new Error("API Response not ok");
 
     const data = await response.json();
+    console.log("5. API Data received:", data);
+
     if (data && data.firstname) {
       userName.value = `${data.firstname} ${data.lastname || ""}`.trim();
       
-      // จัดการ Dynamic Path สำหรับรูปพนักงาน
-      try {
-        const dynamicImg = new URL(`../../assets/profile/${personId}.jpg`, import.meta.url).href;
-        profileImg.value = dynamicImg;
-      } catch (e) {
+      // ค้นหา Path แบบยืดหยุ่น (EndsWith) เพื่อป้องกัน Path Key ของ Vite เพี้ยน
+      const allKeys = Object.keys(profileImages);
+      const matchedKey = allKeys.find(key => key.endsWith(`${personId}.jpg`) || key.endsWith(`${personId}.png`));
+
+      if (matchedKey) {
+        profileImg.value = profileImages[matchedKey];
+      } else {
+        console.warn("6. Image file not found in assets, using default");
         profileImg.value = defaultImg;
       }
     }
   } catch (error) {
     console.error("Fetch profile error:", error);
-    userName.value = "User";
+    userName.value = "User"; // ถ้า API พัง อย่างน้อยชื่อต้องเปลี่ยนเป็น User
     profileImg.value = defaultImg;
   }
 };
 
 const handleImageError = () => {
+  console.log("Image load failed, switching to default");
   profileImg.value = defaultImg;
 };
 

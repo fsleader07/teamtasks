@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/TaskDashboard.vue'),
+      component: () => import('../views/Dashboard.vue'),
       meta: { title: 'หน้าแรก', showInMenu: true, requiresAuth: true },
     },
     {

@@ -107,8 +107,6 @@ const handleLogin = async () => {
       if (data.access_token) localStorage.setItem("token", data.access_token);
       if (data.person_id) localStorage.setItem("person_id", data.person_id);
       if (data.role) localStorage.setItem("role", data.role);
-
-      alert("เข้าสู่ระบบสำเร็จ!");
       
       router.push('/'); 
     } else {
